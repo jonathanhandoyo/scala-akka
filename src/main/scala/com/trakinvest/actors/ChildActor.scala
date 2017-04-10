@@ -1,9 +1,14 @@
-package chapter1.actors
+package com.trakinvest.actors
 
-import akka.actor.{Actor, ActorLogging, Props}
-import chapter1.actors.ChildActor.{Move, Stop}
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
+import com.trakinvest.actors.ChildActor.{Move, Stop}
 
 class ChildActor extends Actor with ActorLogging {
+
+  override def preStart(): Unit = {
+    super.preStart()
+    self ! Stop()
+  }
 
   override def receive: Receive = {
     case m:Move => onMove(m)
@@ -17,6 +22,7 @@ class ChildActor extends Actor with ActorLogging {
 
   private def onStop(message: Stop): Unit = {
     log.info(s"received $message")
+    self ! PoisonPill
   }
 
   private def onUnknown(message: Any): Unit = {

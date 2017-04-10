@@ -1,20 +1,19 @@
-package chapter2.actors
+package com.trakinvest.actors
 
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
-import chapter2.actors.ChildActor.Move
-import chapter2.actors.ParentActor.Trigger
+import com.trakinvest.actors.ParentActor.Echo
+import com.trakinvest.services.SubscriptionService
 
 import scala.concurrent.duration._
 
-class ParentActor extends Actor with ActorLogging {
+class ParentActor(subscriptionService: SubscriptionService) extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     super.preStart()
-    self ! Trigger()
   }
 
   override def receive: Receive = {
-    case m: Trigger => onTrigger(m)
+    case m: Echo => onEcho(m)
     case m: Terminated => onTerminated(m)
     case _ => onUnknown(_)
   }
@@ -28,6 +27,10 @@ class ParentActor extends Actor with ActorLogging {
     }
   }
 
+  private def onEcho(message: Echo): Unit = {
+    log.info(s"received: $message")
+  }
+
   private def onTerminated(message: Terminated): Unit = {
     log.info(s"received: $message")
 
@@ -36,20 +39,14 @@ class ParentActor extends Actor with ActorLogging {
     log.info(s"restarted")
   }
 
-  private def onTrigger(message: Trigger): Unit = {
-    log.info(s"received: $message")
-
-    val child: ActorRef = context.actorOf(ChildActor.props())
-    context.watch(child)
-  }
-
   private def onUnknown(message: Any): Unit = {
     log.info(s"received unknown: $message")
   }
 }
 
 object ParentActor {
-  def props(): Props = Props.create(classOf[ParentActor])
+  def props(subscriptionService: SubscriptionService): Props = Props.create(classOf[ParentActor], subscriptionService)
 
   case class Trigger()
+  case class Echo()
 }
