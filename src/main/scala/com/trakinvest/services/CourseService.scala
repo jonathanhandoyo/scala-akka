@@ -1,7 +1,7 @@
 package com.trakinvest.services
 
 import com.trakinvest.models.CommonTypes.CourseId
-import com.trakinvest.models.Course
+import com.trakinvest.models.course.Course
 import com.typesafe.scalalogging.LazyLogging
 
 class CourseService(couchbaseService: CouchbaseService) extends LazyLogging {

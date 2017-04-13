@@ -1,19 +1,18 @@
 package com.trakinvest.services
 
 import com.trakinvest.models.CommonTypes.{PlanId, UserId}
-import com.trakinvest.models.Subscription
+import com.trakinvest.models.subscription.Subscription
 import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.DateTime
 
 class SubscriptionService(couchbaseService: CouchbaseService) extends LazyLogging {
-  import SubscriptionService._
 
   def getSubscription(userId: UserId): Option[Subscription] = {
-    couchbaseService.retrieve[Subscription](docIdForSubscription(userId))
+    couchbaseService.retrieve[Subscription](Subscription.docId(userId))
   }
 
   def updateSubscription(subscription: Subscription): Option[Subscription] = {
-    couchbaseService.upsert[Subscription](docIdForSubscription(subscription.userId), subscription)
+    couchbaseService.upsert[Subscription](Subscription.docId(subscription.userId), subscription)
   }
 
   def createSubscription(userId: UserId, planId: PlanId): Option[Subscription] = {
@@ -24,15 +23,10 @@ class SubscriptionService(couchbaseService: CouchbaseService) extends LazyLoggin
       startDate = DateTime.now().withTimeAtStartOfDay().getMillis,
       endDate = DateTime.now().plusDays(30).withTimeAtStartOfDay().getMillis
     )
-    couchbaseService.upsert[Subscription](docIdForSubscription(userId), subscription)
+    couchbaseService.upsert[Subscription](Subscription.docId(subscription.userId), subscription)
   }
 }
 
 object SubscriptionService {
   def apply(couchbaseService: CouchbaseService): SubscriptionService = new SubscriptionService(couchbaseService)
-
-  def counterForSubscription(): String = s"subs::counter"
-  def counterForSubscriptionHistory(userId: UserId): String = s"subs::$userId::counter"
-  def docIdForFutureSubscription(userId: UserId): String = s"subs::$userId::future"
-  def docIdForSubscription(userId: UserId): String = s"subs::$userId"
 }

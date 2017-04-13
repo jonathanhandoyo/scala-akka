@@ -87,3 +87,4 @@ project/plugins/project/
 .cache
 .lib/
 
+!/src/main/scala/com/trakinvest/models/course/Question.scala
