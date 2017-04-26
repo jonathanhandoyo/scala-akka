@@ -5,7 +5,7 @@ import com.trakinvest.models.subscription.Subscription
 import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.DateTime
 
-class SubscriptionService(couchbaseService: CouchbaseService) extends LazyLogging {
+class SubscriptionService(couchbaseService: BaseCouchbaseService) extends LazyLogging {
 
   def getSubscription(userId: UserId): Option[Subscription] = {
     couchbaseService.retrieve[Subscription](Subscription.docId(userId))
@@ -28,5 +28,5 @@ class SubscriptionService(couchbaseService: CouchbaseService) extends LazyLoggin
 }
 
 object SubscriptionService {
-  def apply(couchbaseService: CouchbaseService): SubscriptionService = new SubscriptionService(couchbaseService)
+  def apply(couchbaseService: BaseCouchbaseService): SubscriptionService = new SubscriptionService(couchbaseService)
 }

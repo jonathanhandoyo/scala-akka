@@ -1,4 +1,4 @@
-package com.trakinvest.utils
+package com.trakinvest.services
 
 import com.couchbase.client.java.document.json.JsonObject
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.reflect._
 
-object JsonUtil {
+trait BaseJacksonTrait {
   val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

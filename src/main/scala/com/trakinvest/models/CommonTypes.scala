@@ -1,8 +1,11 @@
 package com.trakinvest.models
 
+import org.mongodb.scala.bson.ObjectId
+
 object CommonTypes extends Enumeration {
   type ChapterId = String
   type CourseId = Long
+  type MetricId = ObjectId
   type ModuleId = String
   type PackId = String
   type PlanId = Long

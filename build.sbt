@@ -11,6 +11,7 @@ val v = Map(
   "jackson"               -> "2.8.8",
   "joda-time"             -> "2.9.9",
   "logback"               -> "1.1.7",
+  "mongodb"               -> "2.0.0",
   "scala-logging"         -> "3.5.0",
   "scala-test"            -> "3.0.1"
 )
@@ -23,6 +24,7 @@ libraryDependencies += "com.typesafe.akka"            %% "akka-actor"           
 libraryDependencies += "com.typesafe.akka"            %% "akka-http-core"       % v("akka-http-core")                   withSources() withJavadoc()
 libraryDependencies += "com.typesafe.scala-logging"   %% "scala-logging"        % v("scala-logging")                    withSources() withJavadoc()
 libraryDependencies += "joda-time"                     % "joda-time"            % v("joda-time")                        withSources() withJavadoc()
+libraryDependencies += "org.mongodb.scala"            %% "mongo-scala-driver"   % v("mongodb")                          withSources() withJavadoc()
 
 libraryDependencies += "com.typesafe.akka"            %% "akka-testkit"         % v("akka-actor")              % "test" withSources() withJavadoc()
 libraryDependencies += "org.scalactic"                %% "scalactic"            % v("scala-test")              % "test" withSources() withJavadoc()

@@ -3,31 +3,30 @@ package com.trakinvest.services
 import com.couchbase.client.java.document.JsonDocument
 import com.couchbase.client.java.query.{N1qlQuery, N1qlQueryResult, N1qlQueryRow}
 import com.couchbase.client.java.{Bucket, CouchbaseCluster}
-import com.trakinvest.utils.JsonUtil
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-class CouchbaseService(config: Config) {
-  protected[services] lazy val cluster: CouchbaseCluster = CouchbaseCluster.create(config.getString("couchbase.cluster"))
-  protected[services] lazy val bucket: Bucket = cluster.openBucket(config.getString("couchbase.bucket"))
+class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
+  private lazy val cluster: CouchbaseCluster = CouchbaseCluster.create(config.getString("app.couchbase.cluster"))
+  private lazy val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket"))
 
   protected[services] def delete[T](docId: String)(implicit m: Manifest[T]): Option[T] = {
     val json: String = bucket.remove(docId).content().toString
-    Try(JsonUtil.fromJson[T](json)).toOption
+    Try(fromJson[T](json)).toOption
   }
 
   protected[services] def retrieve[T](docId: String)(implicit m: Manifest[T]): Option[T] = {
     val json: String = bucket.get(docId, classOf[JsonDocument]).content().toString
-    Try(JsonUtil.fromJson[T](json)).toOption
+    Try(fromJson[T](json)).toOption
   }
 
   protected[services] def upsert[T](docId: String, t: T)(implicit m: Manifest[T]): Option[T] = {
-    val document: JsonDocument = JsonDocument.create(docId, JsonUtil.toJsonObject(t))
+    val document: JsonDocument = JsonDocument.create(docId, toJsonObject(t))
     val upserted: JsonDocument = bucket.upsert(document)
     val json: String = upserted.content().toString
-    Try(JsonUtil.fromJson[T](json)).toOption
+    Try(fromJson[T](json)).toOption
   }
 
   protected[services] def currentCounter(counterId: String): Long = {
@@ -51,7 +50,7 @@ class CouchbaseService(config: Config) {
   }
 }
 
-object CouchbaseService {
-  def apply(): CouchbaseService = new CouchbaseService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
-  def apply(config: Config): CouchbaseService = new CouchbaseService(config)
+object BaseCouchbaseService {
+  def apply(): BaseCouchbaseService = new BaseCouchbaseService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
+  def apply(config: Config): BaseCouchbaseService = new BaseCouchbaseService(config)
 }

@@ -2,12 +2,15 @@ package com.trakinvest.actors
 
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
 import com.trakinvest.actors.ParentActor.Echo
-import com.trakinvest.models.subscription.Subscription
-import com.trakinvest.services.SubscriptionService
+import com.trakinvest.services.{MetricService, SubscriptionService}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-class ParentActor(subscriptionService: SubscriptionService) extends Actor with ActorLogging {
+class ParentActor(metricService: MetricService,
+                  subscriptionService: SubscriptionService)
+  extends Actor
+    with ActorLogging {
 
   override def preStart(): Unit = {
     super.preStart()
@@ -30,7 +33,9 @@ class ParentActor(subscriptionService: SubscriptionService) extends Actor with A
 
   private def onEcho(message: Echo): Unit = {
     log.info(s"received: $message")
-    log.info(s"${subscriptionService.getSubscription(4832)}")
+    metricService.getMetric("TRADE", 5703, 5700) map { metric =>
+      log.info(s"$metric")
+    }
   }
 
   private def onTerminated(message: Terminated): Unit = {
@@ -47,7 +52,7 @@ class ParentActor(subscriptionService: SubscriptionService) extends Actor with A
 }
 
 object ParentActor {
-  def props(subscriptionService: SubscriptionService): Props = Props.create(classOf[ParentActor], subscriptionService)
+  def props(metricService: MetricService, subscriptionService: SubscriptionService): Props = Props.create(classOf[ParentActor], metricService, subscriptionService)
 
   case class Trigger()
   case class Echo()

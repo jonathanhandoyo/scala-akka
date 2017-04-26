@@ -4,26 +4,22 @@ import com.trakinvest.models.CommonTypes.CourseId
 import com.trakinvest.models.course.Course
 import com.typesafe.scalalogging.LazyLogging
 
-class CourseService(couchbaseService: CouchbaseService) extends LazyLogging {
-  import CourseService._
+class CourseService(couchbaseService: BaseCouchbaseService) extends LazyLogging {
 
   def getCourse(courseId: CourseId): Option[Course] = {
-    couchbaseService.retrieve[Course](docIdForCourse(courseId))
+    couchbaseService.retrieve[Course](Course.docId(courseId))
   }
 
   def updateCourse(course: Course): Option[Course] = {
-    couchbaseService.upsert[Course](docIdForCourse(course.id), course)
+    couchbaseService.upsert[Course](Course.docId(course.id), course)
   }
 
   def createCourse(course: Course): Option[Course] = {
-    val id: CourseId = couchbaseService.nextCounter(counterForCourse())
-    couchbaseService.upsert[Course](docIdForCourse(id), course.copy(id = id))
+    val id: CourseId = couchbaseService.nextCounter(Course.counter())
+    couchbaseService.upsert[Course](Course.docId(id), course.copy(id = id))
   }
 }
 
 object CourseService {
-  def apply(couchbaseService: CouchbaseService): CourseService = new CourseService(couchbaseService)
-
-  def counterForCourse(): String = s"course::counter"
-  def docIdForCourse(courseId: CourseId): String = s"course::$courseId"
+  def apply(couchbaseService: BaseCouchbaseService): CourseService = new CourseService(couchbaseService)
 }
