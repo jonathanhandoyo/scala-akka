@@ -9,7 +9,7 @@ import com.typesafe.config.Config
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-abstract class AbstractCouchbaseService(config: Config) extends AbstractJacksonTrait {
+abstract class AbstractCouchbaseService(config: Config) extends AbstractJacksonService {
 
   protected[services] val bucket: Bucket
   protected[services] val cluster: CouchbaseCluster

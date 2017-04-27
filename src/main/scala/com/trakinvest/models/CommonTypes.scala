@@ -5,6 +5,7 @@ import org.mongodb.scala.bson.ObjectId
 object CommonTypes extends Enumeration {
   type ChapterId = String
   type CourseId = Long
+  type Currency = String
   type MetricId = ObjectId
   type ModuleId = String
   type PackId = String
@@ -16,6 +17,7 @@ object CommonTypes extends Enumeration {
   type Status = String
   type Timestamp = Long
 
+  type BalanceMap = Map[String, Double]
   type PriceMap = Map[String, Double]
   type RateMap = Map[String, Double]
 
