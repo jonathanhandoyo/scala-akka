@@ -9,8 +9,8 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
-  private lazy val cluster: CouchbaseCluster = CouchbaseCluster.create(config.getString("app.couchbase.cluster"))
-  private lazy val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket"))
+  private val cluster: CouchbaseCluster = CouchbaseCluster.create(config.getString("app.couchbase.cluster"))
+  private val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket"))
 
   protected[services] def delete[T](docId: String)(implicit m: Manifest[T]): Option[T] = {
     val json: String = bucket.remove(docId).content().toString
