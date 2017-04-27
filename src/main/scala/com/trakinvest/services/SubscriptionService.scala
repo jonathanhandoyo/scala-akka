@@ -1,32 +1,42 @@
 package com.trakinvest.services
 
+import com.couchbase.client.java.{Bucket, CouchbaseCluster}
 import com.trakinvest.models.CommonTypes.{PlanId, UserId}
 import com.trakinvest.models.subscription.Subscription
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.DateTime
 
-class SubscriptionService(couchbaseService: BaseCouchbaseService) extends LazyLogging {
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  def getSubscription(userId: UserId): Option[Subscription] = {
-    couchbaseService.retrieve[Subscription](Subscription.docId(userId))
+class SubscriptionService(config: Config) extends BaseCouchbaseService(config) with LazyLogging {
+  override def cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.transactions.clusters"))
+  override def bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.transactions.name"))
+
+  def getSubscription(userId: UserId): Future[Option[Subscription]] = {
+    Future(retrieve[Subscription](Subscription.docId(userId)))
   }
 
-  def updateSubscription(subscription: Subscription): Option[Subscription] = {
-    couchbaseService.upsert[Subscription](Subscription.docId(subscription.userId), subscription)
+  def updateSubscription(subscription: Subscription): Future[Option[Subscription]] = {
+    Future(upsert[Subscription](Subscription.docId(subscription.userId), subscription))
   }
 
-  def createSubscription(userId: UserId, planId: PlanId): Option[Subscription] = {
-    val subscription: Subscription = Subscription(
-      userId = userId,
-      planId = planId,
-      createdDate = DateTime.now().getMillis,
-      startDate = DateTime.now().withTimeAtStartOfDay().getMillis,
-      endDate = DateTime.now().plusDays(30).withTimeAtStartOfDay().getMillis
-    )
-    couchbaseService.upsert[Subscription](Subscription.docId(subscription.userId), subscription)
+  def createSubscription(userId: UserId, planId: PlanId): Future[Option[Subscription]] = {
+    Future {
+      val subscription: Subscription = Subscription(
+        userId = userId,
+        planId = planId,
+        createdDate = DateTime.now().getMillis,
+        startDate = DateTime.now().withTimeAtStartOfDay().getMillis,
+        endDate = DateTime.now().plusDays(30).withTimeAtStartOfDay().getMillis
+      )
+      upsert[Subscription](Subscription.docId(subscription.userId), subscription)
+    }
   }
 }
 
 object SubscriptionService {
-  def apply(couchbaseService: BaseCouchbaseService): SubscriptionService = new SubscriptionService(couchbaseService)
+  def apply(): SubscriptionService = new SubscriptionService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
+  def apply(config: Config): SubscriptionService = new SubscriptionService(config)
 }

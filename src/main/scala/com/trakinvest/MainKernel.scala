@@ -6,10 +6,9 @@ import com.trakinvest.actors.ParentActor.Echo
 import com.trakinvest.services.{BaseCouchbaseService, BaseMongoService, MetricService, SubscriptionService}
 
 object MainKernel extends App {
-  val couchbaseService: BaseCouchbaseService = BaseCouchbaseService()
   val mongoService: BaseMongoService = BaseMongoService()
 
-  val subscriptionService: SubscriptionService = SubscriptionService(couchbaseService)
+  val subscriptionService: SubscriptionService = SubscriptionService()
   val metricService: MetricService = MetricService(mongoService)
 
   val system: ActorSystem = ActorSystem.create("system")

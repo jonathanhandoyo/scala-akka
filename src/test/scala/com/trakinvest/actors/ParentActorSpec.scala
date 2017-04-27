@@ -21,11 +21,10 @@ class ParentActorSpec
   implicit val executionContext: ExecutionContext = system.dispatcher
 
   //com.trakinvest.services here
-  val couchbaseService: BaseCouchbaseService = BaseCouchbaseService()
   val mongoService: BaseMongoService = BaseMongoService()
 
   val metricService: MetricService = MetricService(mongoService)
-  val subscriptionService: SubscriptionService = SubscriptionService(couchbaseService)
+  val subscriptionService: SubscriptionService = SubscriptionService()
 
   //com.trakinvest.actors here
   var parentActor: ActorRef = _

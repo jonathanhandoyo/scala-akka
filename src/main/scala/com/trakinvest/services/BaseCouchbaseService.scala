@@ -1,6 +1,7 @@
 package com.trakinvest.services
 
 import com.couchbase.client.java.document.JsonDocument
+import com.couchbase.client.java.env.{CouchbaseEnvironment, DefaultCouchbaseEnvironment}
 import com.couchbase.client.java.query.{N1qlQuery, N1qlQueryResult, N1qlQueryRow}
 import com.couchbase.client.java.{Bucket, CouchbaseCluster}
 import com.typesafe.config.{Config, ConfigFactory}
@@ -8,9 +9,15 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
-  private val cluster: CouchbaseCluster = CouchbaseCluster.create(config.getString("app.couchbase.cluster"))
-  private val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket"))
+abstract class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
+
+  def bucket: Bucket
+  def cluster: CouchbaseCluster
+  def environment: CouchbaseEnvironment = DefaultCouchbaseEnvironment.builder()
+    .connectTimeout(config.getLong("app.couchbase.environment.connect-timeout"))
+    .maxRequestLifetime(config.getLong("app.couchbase.environment.max-request-lifetime"))
+    .autoreleaseAfter(config.getLong("app.couchbase.environment.auto-release-after"))
+    .build()
 
   protected[services] def delete[T](docId: String)(implicit m: Manifest[T]): Option[T] = {
     val json: String = bucket.remove(docId).content().toString
@@ -50,7 +57,7 @@ class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
   }
 }
 
-object BaseCouchbaseService {
-  def apply(): BaseCouchbaseService = new BaseCouchbaseService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
-  def apply(config: Config): BaseCouchbaseService = new BaseCouchbaseService(config)
-}
+//object BaseCouchbaseService {
+//  def apply(): BaseCouchbaseService = new BaseCouchbaseService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
+//  def apply(config: Config): BaseCouchbaseService = new BaseCouchbaseService(config)
+//}
