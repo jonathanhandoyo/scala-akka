@@ -71,7 +71,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 ### Scala template
-*.class
 *.log
 ### SBT template
 # Simple Build Tool
@@ -83,8 +82,5 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
-.history
 .cache
 .lib/
-
-!/src/main/scala/com/trakinvest/models/course/Question.scala

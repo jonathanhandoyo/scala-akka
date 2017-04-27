@@ -27,7 +27,7 @@ class MetricServiceSpec
       val portfolioId: PortfolioId = 5700
       val code: String = "TRADE"
 
-      val eventualMetric: Future[Metric] = metricService.getMetric(code, userId, portfolioId)
+      val eventualMetric: Future[Metric] = metricService.getMetric(userId, portfolioId, code)
 
       whenReady(eventualMetric, timeout) { metric =>
         metric.userId shouldEqual userId

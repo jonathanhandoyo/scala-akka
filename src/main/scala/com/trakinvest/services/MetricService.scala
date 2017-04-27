@@ -15,7 +15,7 @@ class MetricService(config: Config) extends AbstractMongoService(config) with La
   override val database: MongoDatabase = client.getDatabase(config.getString("app.mongodb.db.analytics"))
   override val collection: MongoCollection[Document] = database.getCollection("metrics")
 
-  def getMetric(code: String, userId: UserId, portfolioId: PortfolioId): Future[Metric] = {
+  def getMetric(userId: UserId, portfolioId: PortfolioId, code: String): Future[Metric] = {
     collection
       .find(
         Filters.and(
@@ -26,6 +26,18 @@ class MetricService(config: Config) extends AbstractMongoService(config) with La
       )
       .head()
       .map(d => fromJson[Metric](d.toJson()))
+  }
+
+  def getAllMetrics(userId: UserId, portfolioId: PortfolioId): Future[Seq[Metric]] = {
+    collection
+      .find(
+        Filters.and(
+          Filters.equal("userId", userId.toString),
+          Filters.equal("portfolioId", portfolioId.toString)
+        )
+      )
+      .toFuture()
+      .map(s => s.map(d => fromJson[Metric](d.toJson())))
   }
 }
 

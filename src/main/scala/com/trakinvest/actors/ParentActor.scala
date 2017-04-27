@@ -33,7 +33,7 @@ class ParentActor(metricService: MetricService,
 
   private def onEcho(message: Echo): Unit = {
     log.info(s"received: $message")
-    metricService.getMetric("TRADE", 5703, 5700) map { metric =>
+    metricService.getMetric(5703, 5700, "TRADE") map { metric =>
       log.info(s"$metric")
     }
   }

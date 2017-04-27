@@ -4,6 +4,7 @@ import org.mongodb.scala.bson.ObjectId
 
 object CommonTypes extends Enumeration {
   type ChapterId = String
+  type CouponId = String
   type CourseId = Long
   type Currency = String
   type MetricId = ObjectId

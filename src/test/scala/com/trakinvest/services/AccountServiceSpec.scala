@@ -27,8 +27,8 @@ class AccountServiceSpec
       val eventualMaybeUser: Future[Option[User]] = accountService.getUser(userId)
 
       whenReady(eventualMaybeUser, timeout) { maybeUser =>
-        maybeUser shouldBe defined
-        maybeUser.get.id shouldEqual userId
+        maybeUser should be (defined)
+        maybeUser.get.id should equal (userId)
       }
     }
   }
