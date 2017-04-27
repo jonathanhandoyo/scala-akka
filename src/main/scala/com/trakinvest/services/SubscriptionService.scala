@@ -10,9 +10,9 @@ import org.joda.time.DateTime
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SubscriptionService(config: Config) extends BaseCouchbaseService(config) with LazyLogging {
-  override def cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.transactions.clusters"))
-  override def bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.transactions.name"))
+class SubscriptionService(config: Config) extends AbstractCouchbaseService(config) with LazyLogging {
+  override val cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.transactions.clusters"))
+  override val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.transactions.name"))
 
   def getSubscription(userId: UserId): Future[Option[Subscription]] = {
     Future(retrieve[Subscription](Subscription.docId(userId)))

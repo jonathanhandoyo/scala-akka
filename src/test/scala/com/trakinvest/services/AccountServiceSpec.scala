@@ -1,5 +1,6 @@
 package com.trakinvest.services
 
+import com.trakinvest.models.CommonTypes.UserId
 import com.trakinvest.models.account.User
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
@@ -22,11 +23,12 @@ class AccountServiceSpec
 
   "AccountService" should {
     "be able to retrieve User by ID" in {
-      val eventualMaybeUser: Future[Option[User]] = accountService.getUser(5703)
+      val userId: UserId = 5703
+      val eventualMaybeUser: Future[Option[User]] = accountService.getUser(userId)
 
       whenReady(eventualMaybeUser, timeout) { maybeUser =>
         maybeUser shouldBe defined
-        maybeUser.get.id shouldEqual 5703
+        maybeUser.get.id shouldEqual userId
       }
     }
   }

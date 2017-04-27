@@ -9,9 +9,9 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CourseService(config: Config) extends BaseCouchbaseService(config) with LazyLogging {
-  override def cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.transactions.clusters"))
-  override def bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.transactions.name"))
+class CourseService(config: Config) extends AbstractCouchbaseService(config) with LazyLogging {
+  override val cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.transactions.clusters"))
+  override val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.transactions.name"))
 
   def getCourse(courseId: CourseId): Future[Option[Course]] = {
     Future(retrieve[Course](Course.docId(courseId)))

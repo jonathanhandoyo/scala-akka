@@ -9,15 +9,13 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AccountService(config: Config) extends BaseCouchbaseService(config) with LazyLogging {
-  override def cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.account.clusters"))
-  override def bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.account.name"))
+class AccountService(config: Config) extends AbstractCouchbaseService(config) with LazyLogging {
+  override val cluster: CouchbaseCluster = CouchbaseCluster.create(environment, config.getStringList("app.couchbase.bucket.account.clusters"))
+  override val bucket: Bucket = cluster.openBucket(config.getString("app.couchbase.bucket.account.name"))
 
   def getUser(userId: UserId): Future[Option[User]] = {
     Future(retrieve[User](User.docId(userId)))
   }
-
-
 }
 
 object AccountService {

@@ -4,16 +4,16 @@ import com.couchbase.client.java.document.JsonDocument
 import com.couchbase.client.java.env.{CouchbaseEnvironment, DefaultCouchbaseEnvironment}
 import com.couchbase.client.java.query.{N1qlQuery, N1qlQueryResult, N1qlQueryRow}
 import com.couchbase.client.java.{Bucket, CouchbaseCluster}
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.Config
 
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-abstract class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
+abstract class AbstractCouchbaseService(config: Config) extends AbstractJacksonTrait {
 
-  def bucket: Bucket
-  def cluster: CouchbaseCluster
-  def environment: CouchbaseEnvironment = DefaultCouchbaseEnvironment.builder()
+  protected[services] val bucket: Bucket
+  protected[services] val cluster: CouchbaseCluster
+  protected[services] val environment: CouchbaseEnvironment = DefaultCouchbaseEnvironment.builder()
     .connectTimeout(config.getLong("app.couchbase.environment.connect-timeout"))
     .maxRequestLifetime(config.getLong("app.couchbase.environment.max-request-lifetime"))
     .autoreleaseAfter(config.getLong("app.couchbase.environment.auto-release-after"))
@@ -56,8 +56,3 @@ abstract class BaseCouchbaseService(config: Config) extends BaseJacksonTrait {
     Try(mapper(bucket.query(query).allRows().asScala.head)).toOption
   }
 }
-
-//object BaseCouchbaseService {
-//  def apply(): BaseCouchbaseService = new BaseCouchbaseService(ConfigFactory.defaultApplication().withFallback(ConfigFactory.defaultReference()))
-//  def apply(config: Config): BaseCouchbaseService = new BaseCouchbaseService(config)
-//}

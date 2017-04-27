@@ -3,7 +3,7 @@ package com.trakinvest.actors
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
 import com.trakinvest.actors.ParentActor.Echo
-import com.trakinvest.services.{BaseCouchbaseService, BaseMongoService, MetricService, SubscriptionService}
+import com.trakinvest.services.{AbstractCouchbaseService, AbstractMongoService, MetricService, SubscriptionService}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.ExecutionContext
@@ -20,13 +20,11 @@ class ParentActorSpec
   //implicits here
   implicit val executionContext: ExecutionContext = system.dispatcher
 
-  //com.trakinvest.services here
-  val mongoService: BaseMongoService = BaseMongoService()
-
-  val metricService: MetricService = MetricService(mongoService)
+  //services here
+  val metricService: MetricService = MetricService()
   val subscriptionService: SubscriptionService = SubscriptionService()
 
-  //com.trakinvest.actors here
+  //actors here
   var parentActor: ActorRef = _
 
   override protected def beforeAll: Unit = {
